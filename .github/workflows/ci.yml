@@ -1,0 +1,35 @@
+name: Titan Mime4j Workflow
+
+on:
+  issue_comment:
+    types: [created]
+  push:
+    branches:
+      - master
+      - prod
+
+jobs:
+  run-check:
+    if: github.event.issue.pull_request && (contains(github.event.comment.body, '/check') || contains(github.event.comment.body, '/test') || contains(github.event.comment.body, '/prcheck')  || contains(github.event.comment.body, '/release'))
+    uses: talk-to/titan-github-actions/.github/workflows/run-check.yaml@main
+    secrets:
+      sonarToken: ${{ secrets.GHA_SONAR_TOKEN }}
+      ghToken: ${{ secrets.GHA_TOKEN }}
+
+  build-and-deploy:
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/deploy')
+    uses: talk-to/titan-github-actions/.github/workflows/build-and-deploy.yaml@main
+    secrets:
+      ghToken: ${{ secrets.GHA_TOKEN }}
+
+  build-and-deploy-staging:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    uses: talk-to/titan-github-actions/.github/workflows/build-and-deploy.yaml@main
+    secrets:
+      ghToken: ${{ secrets.GHA_TOKEN }}
+
+  post-prod-merge:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/prod'
+    uses: talk-to/titan-github-actions/.github/workflows/post-prod-merge.yaml@main
+    secrets:
+      ghToken: ${{ secrets.GHA_TOKEN }}

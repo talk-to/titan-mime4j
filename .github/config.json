@@ -1,0 +1,14 @@
+{
+  "projects": [
+    {
+      "directory": ".",
+      "name": "titan-mime4j",
+      "type": "library",
+      "test": {
+        "codeAnalysis": {
+          "enabled": "false"
+        }
+      }
+    }
+  ]
+}
